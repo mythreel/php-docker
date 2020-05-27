@@ -1,7 +1,5 @@
 FROM debian:10
 
-WORKDIR /var/www/html
-
 RUN apt-get update
 
 RUN apt-get install -y sudo nano php7.3-fpm php7.3 php7.3-xml php7.3-gd php7.3-mysql php7.3-pdo php7.3-mbstring nginx supervisor
