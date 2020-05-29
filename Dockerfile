@@ -2,12 +2,19 @@ FROM debian:10
 
 RUN apt-get update
 
-RUN apt-get install -y sudo nano php7.3-fpm php7.3 php7.3-xml php7.3-gd php7.3-mysql php7.3-pdo php7.3-mbstring nginx supervisor
+RUN apt-get install -y sudo nano php7.3-fpm php7.3 php7.3-xml php7.3-gd php7.3-mysql php7.3-pdo php7.3-mbstring nginx supervisor msmtp msmtp-mta mailutils
 
+COPY msmtprc /etc/msmtprc
+RUN chown www-data:www-data /etc/msmtprc
 COPY default /etc/nginx/sites-available/default
 RUN sed -i -e 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/7.3/fpm/php.ini && \
     echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+
+RUN echo "sendmail_path = /usr/bin/msmtp -t -i" >> /etc/php/7.3/cli/php.ini
+RUN echo "sendmail_path = /usr/bin/msmtp -t -i" >> /etc/php/7.3/fpm/php.ini
+
+RUN chmod 600 /etc/msmtprc
 RUN mkdir -p /run/php && \
     chown -R www-data:www-data /var/www/html && \
     chown -R www-data:www-data /run/php
